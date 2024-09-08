@@ -1,22 +1,51 @@
 import React, { useState } from 'react';
+import ReactMarkdown from 'react-markdown'; // Import react-markdown
 
 function Chat() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
+  const [loading, setLoading] = useState(false); // Add loading state
 
   const toggleChat = () => setIsOpen(!isOpen);
 
-  const handleSendMessage = (e) => {
+  const handleSendMessage = async (e) => {
     e.preventDefault();
     if (inputMessage.trim() !== '') {
+      // Add user message to chat
       setMessages([...messages, { text: inputMessage, sender: 'user' }]);
       setInputMessage('');
-      // Here you would typically send the message to your backend
-      // and then receive a response to add to the messages
-      setTimeout(() => {
-        setMessages(prevMessages => [...prevMessages, { text: "Thank you for your message. An agent will respond shortly.", sender: 'bot' }]);
-      }, 1000);
+      setLoading(true); // Set loading state to true
+
+      try {
+        // Send message to backend
+        const response = await fetch('http://127.0.0.1:8000/generate_answers', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ questions: [inputMessage] }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        // Add bot's response to chat
+        setMessages(prevMessages => [
+          ...prevMessages,
+          { text: data.answers[0], sender: 'bot' }
+        ]);
+      } catch (error) {
+        console.error('Error fetching answer:', error);
+        setMessages(prevMessages => [
+          ...prevMessages,
+          { text: 'Sorry, there was an error processing your request.', sender: 'bot' }
+        ]);
+      } finally {
+        setLoading(false); // Set loading state to false
+      }
     }
   };
 
@@ -26,30 +55,45 @@ function Chat() {
         onClick={toggleChat}
         className="fixed bottom-4 right-4 bg-blue-500 text-white p-4 rounded-full shadow-lg hover:bg-blue-600 transition-colors"
       >
-        {isOpen ? 'Close Chat' : 'Open Chat'}
+        {isOpen ? 'Close Chat' : 'get same answer'}
       </button>
       {isOpen && (
-        <div className="fixed bottom-20 right-4 w-80 h-96 bg-white rounded-lg shadow-xl flex flex-col">
+        <div className="fixed bottom-20 right-4 w-80 h-96 bg-white rounded-lg shadow-xl flex flex-col border border-gray-300">
           <div className="bg-blue-500 text-white p-4 rounded-t-lg">
             <h3 className="text-lg font-semibold">Chat with us</h3>
           </div>
-          <div className="flex-grow p-4 overflow-y-auto">
+          <div className="flex-grow p-4 overflow-y-auto bg-gray-100">
             {messages.map((message, index) => (
               <div key={index} className={`mb-2 ${message.sender === 'user' ? 'text-right' : 'text-left'}`}>
-                <span className={`inline-block p-2 rounded-lg ${message.sender === 'user' ? 'bg-blue-100' : 'bg-gray-200'}`}>
-                  {message.text}
+                <span
+                  className={`inline-block p-2 rounded-lg ${
+                    message.sender === 'user'
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-green-500 text-white' // Updated styling for bot answers
+                  }`}
+                >
+                  {message.sender === 'bot' ? (
+                    <ReactMarkdown>{message.text}</ReactMarkdown>
+                  ) : (
+                    message.text
+                  )}
                 </span>
               </div>
             ))}
+            {loading && (
+              <div className="text-center mt-2">
+                <span>Loading...</span>
+              </div>
+            )}
           </div>
-          <form onSubmit={handleSendMessage} className="p-4 border-t">
+          <form onSubmit={handleSendMessage} className="p-4 border-t bg-white">
             <div className="flex">
               <input
                 type="text"
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 placeholder="Type a message..."
-                className="flex-grow p-2 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex-grow p-2 border rounded-l-lg border-gray-300 text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <button
                 type="submit"

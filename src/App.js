@@ -52,7 +52,7 @@ function App() {
       <main className="container mx-auto px-4 py-8">
         <ResumeUpload onParsedData={handleParsedData} />
         <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <button onClick={() => setActiveComponent('processCv')} className="bg-blue-500 px-4 py-2 rounded-md text-sm font-semibold">Process CV</button>
+          <button onClick={() => setActiveComponent('processCv')} className="bg-pink-300 px-4 py-2 rounded-md text-sm font-semibold">Process CV</button>
           <button onClick={() => setActiveComponent('latestJobs')} className="bg-blue-500 px-4 py-2 rounded-md text-sm font-semibold">Latest Job Opportunities</button>
           <button onClick={() => setActiveComponent('interviewQuestions')} className="bg-green-500 px-4 py-2 rounded-md text-sm font-semibold">Interview Questions</button>
           <button onClick={() => setActiveComponent('coverLetter')} className="bg-purple-500 px-4 py-2 rounded-md text-sm font-semibold">Generate Cover Letter</button>
