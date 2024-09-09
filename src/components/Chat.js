@@ -12,13 +12,11 @@ function Chat() {
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (inputMessage.trim() !== '') {
-      // Add user message to chat
       setMessages([...messages, { text: inputMessage, sender: 'user' }]);
       setInputMessage('');
       setLoading(true); // Set loading state to true
 
       try {
-        // Send message to backend
         const response = await fetch('http://127.0.0.1:8000/generate_answers', {
           method: 'POST',
           headers: {
@@ -32,7 +30,6 @@ function Chat() {
         }
 
         const data = await response.json();
-        // Add bot's response to chat
         setMessages(prevMessages => [
           ...prevMessages,
           { text: data.answers[0], sender: 'bot' }
@@ -55,7 +52,7 @@ function Chat() {
         onClick={toggleChat}
         className="fixed bottom-4 right-4 bg-blue-500 text-white p-4 rounded-full shadow-lg hover:bg-blue-600 transition-colors"
       >
-        {isOpen ? 'Close Chat' : 'get same answer'}
+        {isOpen ? 'Close Chat' : 'Get awnser to your questions'}
       </button>
       {isOpen && (
         <div className="fixed bottom-20 right-4 w-80 h-96 bg-white rounded-lg shadow-xl flex flex-col border border-gray-300">
@@ -69,7 +66,7 @@ function Chat() {
                   className={`inline-block p-2 rounded-lg ${
                     message.sender === 'user'
                       ? 'bg-blue-500 text-white'
-                      : 'bg-green-500 text-white' // Updated styling for bot answers
+                      : 'bg-green-500 text-white'
                   }`}
                 >
                   {message.sender === 'bot' ? (
@@ -81,8 +78,8 @@ function Chat() {
               </div>
             ))}
             {loading && (
-              <div className="text-center mt-2">
-                <span>Loading...</span>
+              <div className="text-center mt-2 text-black">
+                <span className='text-black'>Loading...</span>
               </div>
             )}
           </div>
