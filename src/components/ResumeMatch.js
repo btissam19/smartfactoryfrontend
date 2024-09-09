@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ReactMarkdown from 'react-markdown';
-
+import { CONFIG } from './config';
+const baseURL = CONFIG.BASE_URL;
 function JobMatchResults() {
   const [jobDescription, setJobDescription] = useState('');
   const [matchResults, setMatchResults] = useState(null);
@@ -13,7 +14,7 @@ function JobMatchResults() {
     setLoading(true);
     setMatchResults(null); // Clear previous results
     try {
-      const response = await fetch('http://127.0.0.1:8000/compare_resume', {
+      const response = await fetch(`${baseURL}/compare_resume`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -48,7 +49,7 @@ function JobMatchResults() {
 
   return (
     <div className="bg-gray-800 p-6 rounded-lg">
-      <h2 className="text-2xl font-bold mb-4 text-white">Job Match Results</h2>
+      <h2 className="text-2xl font-bold mb-4 text-white">Job Descreption</h2>
       <textarea
         rows="5"
         className="w-full p-2 mb-4 border border-gray-300 rounded"
