@@ -6,6 +6,42 @@ function LatestJobs() {
   const [location, setLocation] = useState('');
   const [jobs, setJobs] = useState([]);
 
+  // Function to convert relative time to timestamp
+  const parseRelativeTime = (relativeTime) => {
+    if (typeof relativeTime !== 'string') return new Date().getTime(); // Return current time if invalid format
+
+    const now = new Date();
+    const match = relativeTime.match(/(\d+)\s*(day|days|hour|hours|minute|minutes|second|seconds)\s*ago/);
+    if (!match) return now.getTime(); // Return current time if parsing fails
+
+    const [_, amount, unit] = match;
+    const value = parseInt(amount, 10);
+    let time;
+
+    switch (unit) {
+      case 'day':
+      case 'days':
+        time = now.getTime() - value * 24 * 60 * 60 * 1000; // Days in milliseconds
+        break;
+      case 'hour':
+      case 'hours':
+        time = now.getTime() - value * 60 * 60 * 1000; // Hours in milliseconds
+        break;
+      case 'minute':
+      case 'minutes':
+        time = now.getTime() - value * 60 * 1000; // Minutes in milliseconds
+        break;
+      case 'second':
+      case 'seconds':
+        time = now.getTime() - value * 1000; // Seconds in milliseconds
+        break;
+      default:
+        time = now.getTime(); // Default to current time
+    }
+
+    return time;
+  };
+
   // Function to handle the API call
   const searchJobs = async () => {
     try {
@@ -21,8 +57,23 @@ function LatestJobs() {
       // Parse the JSON response
       const data = await response.json();
 
-      // Update the jobs state with the results from the backend
-      setJobs(data.google_jobs || []);
+      // Log the raw data to debug
+      console.log('Raw job data:', data.google_jobs);
+
+      // Filter and sort jobs by `posted_at`
+      const filteredAndSortedJobs = (data.google_jobs || [])
+        .filter(jobItem => jobItem.detected_extensions && jobItem.detected_extensions.posted_at)
+        .sort((a, b) => {
+          const timeA = parseRelativeTime(a.detected_extensions.posted_at);
+          const timeB = parseRelativeTime(b.detected_extensions.posted_at);
+
+          // Log parsed times to verify
+          console.log('Time A:', timeA, 'Time B:', timeB);
+
+          return timeB - timeA; // Sort in descending order
+        });
+
+      setJobs(filteredAndSortedJobs);
     } catch (error) {
       console.error('Error fetching jobs:', error);
     }
@@ -70,13 +121,23 @@ function LatestJobs() {
               <h3 className="text-xl font-semibold mb-2">{jobItem.title}</h3>
               <p className="text-gray-300 mb-1">{jobItem.company_name}</p>
               <p className="text-gray-300 mb-2">{jobItem.location}</p>
-              <div className="flex flex-wrap mb-2">
-                {jobItem.detected_extensions.map((ext, i) => (
-                  <span key={i} className="bg-gray-600 text-gray-200 px-2 py-1 rounded mr-2">
-                    {ext}
-                  </span>
+
+              {/* Display detected extensions if `posted_at` exists */}
+              <div className="mb-2">
+                {jobItem.detected_extensions.posted_at && (
+                  <div className="mb-1 text-gray-300">
+                    <strong>Posted at:</strong> {jobItem.detected_extensions.posted_at}
+                  </div>
+                )}
+                {Object.entries(jobItem.detected_extensions).map(([key, value], i) => (
+                  key !== 'posted_at' && (
+                    <div key={i} className="mb-1 text-gray-300">
+                      <strong>{key.replace('_', ' ')}:</strong> {value}
+                    </div>
+                  )
                 ))}
               </div>
+
               <p className="text-gray-100 mb-4">{jobItem.description}</p>
               
               {/* Apply Options with Title */}
