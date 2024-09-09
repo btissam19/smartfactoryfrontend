@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
+import { CONFIG } from './config';
+import { ToastContainer, toast } from 'react-toastify'; // Import ToastContainer and toast
+import 'react-toastify/dist/ReactToastify.css'; // Import CSS for toast notifications
+
+const baseURL = CONFIG.BASE_URL;
 
 function LatestJobs() {
-  // State to store job title, location, and the search results
   const [job, setJob] = useState('');
   const [location, setLocation] = useState('');
   const [jobs, setJobs] = useState([]);
@@ -46,7 +50,7 @@ function LatestJobs() {
   const searchJobs = async () => {
     try {
       // Make a POST request to the backend
-      const response = await fetch('http://127.0.0.1:8000/search_job', {
+      const response = await fetch(`${baseURL}/search_job`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -56,6 +60,10 @@ function LatestJobs() {
 
       // Parse the JSON response
       const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.detail || 'Error fetching jobs');
+      }
 
       // Log the raw data to debug
       console.log('Raw job data:', data.google_jobs);
@@ -74,8 +82,10 @@ function LatestJobs() {
         });
 
       setJobs(filteredAndSortedJobs);
+      toast.success('Jobs successfully fetched!'); // Show success toast
     } catch (error) {
       console.error('Error fetching jobs:', error);
+      toast.error(`Error: ${error.message}`); // Show error toast
     }
   };
 
@@ -167,6 +177,8 @@ function LatestJobs() {
       ) : (
         <p className="mt-4 text-gray-400">No job results to display</p>
       )}
+
+      <ToastContainer /> {/* Add ToastContainer here */}
     </div>
   );
 }

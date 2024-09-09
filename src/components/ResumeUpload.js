@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { CONFIG } from './config';
+const baseURL = CONFIG.BASE_URL;
 
 function ResumeUpload({ onParsedData }) {
   const [file, setFile] = useState(null);
@@ -20,7 +22,7 @@ function ResumeUpload({ onParsedData }) {
     formData.append('file', file);
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/upload_and_process/', {
+      const response = await fetch(`${baseURL}/upload_and_process/`, {
         method: 'POST',
         body: formData,
       });

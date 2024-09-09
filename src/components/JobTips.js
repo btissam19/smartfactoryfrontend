@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ReactMarkdown from 'react-markdown';
-
+import { CONFIG } from './config';
+const baseURL = CONFIG.BASE_URL;
 function JobTips() {
   const [jobDescription, setJobDescription] = useState('');
   const [tips, setTips] = useState('');
@@ -12,7 +13,7 @@ function JobTips() {
     setLoading(true);
     setTips(''); // Clear previous tips
     try {
-      const response = await fetch('http://127.0.0.1:8000/tips', {
+      const response = await fetch(`${baseURL}/tips`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

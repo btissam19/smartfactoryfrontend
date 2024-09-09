@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown'; // Import react-markdown
-
+import { CONFIG } from './config';
+const baseURL = CONFIG.BASE_URL;
 function Chat() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -17,7 +18,7 @@ function Chat() {
       setLoading(true); // Set loading state to true
 
       try {
-        const response = await fetch('http://127.0.0.1:8000/generate_answers', {
+        const response = await fetch(`${baseURL}/generate_answers`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

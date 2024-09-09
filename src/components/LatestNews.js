@@ -1,4 +1,9 @@
 import React, { useState } from 'react';
+import { CONFIG } from './config';
+import { ToastContainer, toast } from 'react-toastify'; // Import ToastContainer and toast
+import 'react-toastify/dist/ReactToastify.css'; // Import CSS for toast notifications
+
+const baseURL = CONFIG.BASE_URL;
 
 function LatestNews() {
   const [query, setQuery] = useState('');
@@ -11,7 +16,7 @@ function LatestNews() {
     setLoading(true);
     setError('');
     try {
-      const response = await fetch('http://localhost:8000/search_news', {
+      const response = await fetch(`${baseURL}/search_news`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -24,8 +29,10 @@ function LatestNews() {
         throw new Error(data.detail || 'Error fetching news');
       }
       setNews(data);
+      toast.success('News successfully fetched!'); // Show success toast
     } catch (err) {
       setError(err.message);
+      toast.error(`Error: ${err.message}`); // Show error toast
     } finally {
       setLoading(false);
     }
@@ -83,6 +90,8 @@ function LatestNews() {
           !loading && <p className="text-white">No news articles found.</p>
         )}
       </div>
+
+      <ToastContainer /> {/* Add ToastContainer here */}
     </div>
   );
 }

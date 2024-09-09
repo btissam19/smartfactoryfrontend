@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { CONFIG } from './config';
+const baseURL = CONFIG.BASE_URL;
 
 function ProcessCv() {
   const [resumeData, setResumeData] = useState(null);
@@ -11,7 +13,7 @@ function ProcessCv() {
     const fetchResumeData = async () => {
       setLoading(true);
       try {
-        const response = await fetch('http://127.0.0.1:8000/process_resume');
+        const response = await fetch(`${baseURL}/process_resume`);
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }

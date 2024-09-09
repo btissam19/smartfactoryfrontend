@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ReactMarkdown from 'react-markdown';
+import { CONFIG } from './config';
+const baseURL = CONFIG.BASE_URL;
 
 function InterviewQuestions() {
   const [interviewQuestions, setInterviewQuestions] = useState('');
@@ -12,7 +14,7 @@ function InterviewQuestions() {
     const fetchInterviewQuestions = async () => {
       setLoading(true);
       try {
-        const response = await fetch('http://127.0.0.1:8000/generate_interview_questions');
+        const response = await fetch(`${baseURL}/generate_interview_questions`);
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }

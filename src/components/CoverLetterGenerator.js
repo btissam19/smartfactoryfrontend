@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ReactMarkdown from 'react-markdown';
+import { CONFIG } from './config';
+const baseURL = CONFIG.BASE_URL;
 
 function CoverLetterGenerator() {
   const [jobDescription, setJobDescription] = useState('');
@@ -13,7 +15,7 @@ function CoverLetterGenerator() {
     setLoading(true);
     setCoverLetter(''); // Clear previous cover letter
     try {
-      const response = await fetch('http://localhost:8000/cover_letter', {
+      const response = await fetch(`${baseURL}/cover_letter`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
