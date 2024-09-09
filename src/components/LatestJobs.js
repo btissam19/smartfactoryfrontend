@@ -21,6 +21,7 @@ function LatestJobs() {
     const [_, amount, unit] = match;
     const value = parseInt(amount, 10);
     let time;
+    console.log(_)
 
     switch (unit) {
       case 'day':
