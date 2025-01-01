@@ -1,4 +1,4 @@
 export const CONFIG = {
-    BASE_URL:'https://smartfactorybackend.onrender.com'
+    BASE_URL:'http://127.0.0.1:8000'
   };
   
